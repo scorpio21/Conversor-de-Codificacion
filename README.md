@@ -1,5 +1,7 @@
 # Conversor de Codificación (UTF-8 ↔ Windows-1252)
 
+![Captura del programa](img/captura.png)
+
 Tools for use IA on VB6 (Visual Basic 6)
 
 ## Créditos

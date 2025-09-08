@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/convert-encoding.css?v=1">
 </head>
 <body>
-    <header class="cabecera">
+    <header class="cabecera" style="text-align: center;">
         <h1>Conversor de Codificación</h1>
         <p>Convierte archivos .bas, .cls, .frm, .vbp entre UTF-8 (sin BOM) y Windows-1252, recorriendo subcarpetas.</p>
         <div class="creditos cabecera-creditos" role="note" style="text-align: center;">
