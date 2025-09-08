@@ -1,0 +1,44 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Backups y temporales
+*.bak
+*.tmp
+~$*
+
+# Entornos y credenciales
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Dependencias comunes (por si se agregan en el futuro)
+node_modules/
+vendor/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Cachés
+.cache/
+.phpunit.result.cache
+coverage/
+
+# Sistema
+# (evita subir binarios o artefactos accidentales)
+*.exe
+*.dll
+*.pdb
+*.so
+*.dylib
+
+# Otros
+# Carpeta temporal de compilaciones o exportaciones si se usa
+/dist/
+/build/
