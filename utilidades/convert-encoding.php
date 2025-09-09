@@ -22,6 +22,124 @@ function limpiarRuta(string $ruta): string {
     return rtrim($ruta, DIRECTORY_SEPARATOR);
 }
 
+/**
+ * Verifica si una cadena de bytes es UTF-8 válida.
+ */
+function esUtf8Valido(string $bytes): bool {
+    return function_exists('mb_check_encoding') ? mb_check_encoding($bytes, 'UTF-8') : false;
+}
+
+/**
+ * Restaura un archivo desde su copia .bak si existe.
+ */
+function restaurarDesdeBak(string $rutaArchivo): array {
+    try {
+        $bak = $rutaArchivo . '.bak';
+        if (!file_exists($bak)) {
+            return ['ok' => false, 'mensaje' => 'No existe .bak para este archivo'];
+        }
+        if (!is_readable($bak)) {
+            return ['ok' => false, 'mensaje' => 'El .bak no es legible'];
+        }
+        $contenido = file_get_contents($bak);
+        if ($contenido === false) {
+            throw new RuntimeException('No se pudo leer el .bak');
+        }
+        $ok = file_put_contents($rutaArchivo, $contenido);
+        if ($ok === false) {
+            throw new RuntimeException('No se pudo escribir el archivo de destino');
+        }
+        return ['ok' => true, 'mensaje' => 'Restaurado desde .bak'];
+    } catch (Throwable $e) {
+        return ['ok' => false, 'mensaje' => $e->getMessage()];
+    }
+}
+
+/**
+ * Calcula un puntaje de "mojibake" contando patrones típicos como "Ã", "Â", "â", comillas tipográficas rotas, etc.
+ * Un número mayor indica más corrupción visible.
+ */
+function puntajeMojibake(string $texto): int {
+    $patrones = [
+        'Ã', // aparece cuando un byte 0xC3 de UTF-8 fue mal interpretado
+        'Â', // aparece con signos de puntuación y espacios duros
+        'â', // familia de comillas y guiones tipográficos rotos
+        '€', // suele acompañar secuencias mal decodificadas
+        'â€“', 'â€”', 'â€œ', 'â€', 'â€', 'â€˜', 'â€™', 'â€¢', 'â€¦'
+    ];
+    $suma = 0;
+    foreach ($patrones as $p) {
+        $suma += substr_count($texto, $p);
+    }
+    return $suma;
+}
+
+/**
+ * Intenta reparar una capa de mojibake común:
+ *  - Convierte de UTF-8 a Windows-1252 (como bytes) ignorando lo que no mapea
+ *  - Vuelve a interpretar esos bytes como UTF-8
+ */
+function repararTextoMojibakeUnaVez(string $texto): string {
+    $paso1 = @iconv('UTF-8', 'Windows-1252//IGNORE', $texto);
+    if ($paso1 === false) {
+        $paso1 = @mb_convert_encoding($texto, 'Windows-1252', 'UTF-8');
+    }
+    if ($paso1 === false) { return $texto; }
+    $paso2 = @iconv('Windows-1252', 'UTF-8//IGNORE', $paso1);
+    if ($paso2 === false) {
+        $paso2 = @mb_convert_encoding($paso1, 'UTF-8', 'Windows-1252');
+    }
+    return $paso2 === false ? $texto : $paso2;
+}
+
+/**
+ * Repara mojibake en un archivo aplicando 1–2 pasadas si mejoran el puntaje y guarda el resultado en Windows-1252.
+ */
+function repararMojibake(string $rutaArchivo): array {
+    try {
+        $raw = file_get_contents($rutaArchivo);
+        if ($raw === false) {
+            throw new RuntimeException('No se pudo leer el archivo');
+        }
+
+        // Interpretamos el contenido como UTF-8 a nivel de string para la heurística.
+        // Si no es UTF-8 válido, PHP igualmente lo tratará como bytes y la heurística seguirá contando patrones.
+        $s0 = puntajeMojibake($raw);
+
+        $t1 = repararTextoMojibakeUnaVez($raw);
+        $s1 = puntajeMojibake($t1);
+
+        $mejor = $raw; $sMejor = $s0; $pasadas = 0;
+        if ($s1 < $s0) {
+            $mejor = $t1; $sMejor = $s1; $pasadas = 1;
+            // Intento de doble capa
+            $t2 = repararTextoMojibakeUnaVez($t1);
+            $s2 = puntajeMojibake($t2);
+            if ($s2 < $s1) { $mejor = $t2; $sMejor = $s2; $pasadas = 2; }
+        }
+
+        if ($pasadas > 0) {
+            // Guardar como Windows-1252 (recomendado para VB6)
+            $bytes1252 = @iconv('UTF-8', 'Windows-1252//TRANSLIT//IGNORE', $mejor);
+            if ($bytes1252 === false) {
+                $bytes1252 = @mb_convert_encoding($mejor, 'Windows-1252', 'UTF-8');
+            }
+            if ($bytes1252 === false) {
+                throw new RuntimeException('No se pudo convertir el resultado a Windows-1252');
+            }
+            $ok = file_put_contents($rutaArchivo, $bytes1252);
+            if ($ok === false) {
+                throw new RuntimeException('No se pudo escribir el archivo');
+            }
+            return ['ok' => true, 'mensaje' => "Reparado x{$pasadas} (score: {$s0} → {$sMejor}) y guardado en Windows-1252"];
+        }
+
+        return ['ok' => true, 'mensaje' => 'Sin mejora necesaria'];
+    } catch (Throwable $e) {
+        return ['ok' => false, 'mensaje' => $e->getMessage()];
+    }
+}
+
 function esRutaValida(string $ruta): bool {
     return $ruta !== '' && is_dir($ruta) && is_readable($ruta) && is_writable($ruta);
 }
@@ -76,19 +194,23 @@ function listarArchivos(string $basePath, array $extensiones, bool $recursivo = 
 }
 
 function convertirAUtf8(string $rutaArchivo): array {
-    // Lee bytes como Windows-1252 y escribe como UTF-8 sin BOM
+    // Convierte Windows-1252 → UTF-8 sin BOM, evitando doble conversión
     try {
-        $bytes = file_get_contents($rutaArchivo);
-        if ($bytes === false) {
+        $contenido = file_get_contents($rutaArchivo);
+        if ($contenido === false) {
             throw new RuntimeException('No se pudo leer el archivo');
         }
-        // Convertir de CP1252 a UTF-8
-        $contenido = iconv('Windows-1252', 'UTF-8//TRANSLIT', $bytes);
-        if ($contenido === false) {
-            // Fallback con mb
-            $contenido = mb_convert_encoding((string)$bytes, 'UTF-8', 'Windows-1252');
+        // Si ya es UTF-8 válido, no convertimos (evitamos doble conversión)
+        if (esUtf8Valido($contenido)) {
+            return ['ok' => true, 'mensaje' => 'Sin cambios (ya es UTF-8 válido)'];
         }
-        $ok = file_put_contents($rutaArchivo, $contenido);
+        // Convertir de CP1252 a UTF-8
+        $convertido = iconv('Windows-1252', 'UTF-8//TRANSLIT', $contenido);
+        if ($convertido === false) {
+            // Fallback con mb
+            $convertido = mb_convert_encoding((string)$contenido, 'UTF-8', 'Windows-1252');
+        }
+        $ok = file_put_contents($rutaArchivo, $convertido);
         if ($ok === false) {
             throw new RuntimeException('No se pudo escribir el archivo');
         }
@@ -98,17 +220,27 @@ function convertirAUtf8(string $rutaArchivo): array {
     }
 }
 
-// Valor a mostrar en el input al cargar (evita exponer la ruta absoluta del servidor en hosting)
-$basePathUI = $_SERVER['REQUEST_METHOD'] === 'POST'
-    ? $basePath
-    : '';
-
 function convertirAWin1252(string $rutaArchivo): array {
-    // Lee como UTF-8 y escribe como Windows-1252 (posible transliteración)
+    // Convierte UTF-8 → Windows-1252 con salvaguardas (evita introducir mojibake)
     try {
         $contenido = file_get_contents($rutaArchivo);
         if ($contenido === false) {
             throw new RuntimeException('No se pudo leer el archivo');
+        }
+        // Si NO es UTF-8 válido y parece mojibake, intentamos reparar primero
+        if (!esUtf8Valido($contenido)) {
+            // Heurística: si hay patrones de mojibake, reparamos y luego escribimos CP1252
+            if (puntajeMojibake($contenido) > 0) {
+                $fix = repararMojibake($rutaArchivo);
+                if ($fix['ok']) {
+                    return $fix; // ya guardó en CP1252 si mejoró
+                } else {
+                    return ['ok' => false, 'mensaje' => 'Entrada no UTF-8 y con mojibake. Sugerido: usar "Arreglar mojibake". Detalle: ' . $fix['mensaje']];
+                }
+            } else {
+                // No es UTF-8 y no hay señales de mojibake → probablemente ya esté en CP1252
+                return ['ok' => true, 'mensaje' => 'Sin cambios (probablemente ya en Windows-1252)'];
+            }
         }
         // Convertir de UTF-8 a CP1252 con transliteración cuando sea posible
         $bytes = iconv('UTF-8', 'Windows-1252//TRANSLIT//IGNORE', $contenido);
@@ -172,13 +304,13 @@ $resumen = [
 
 $basePath = $defaultBasePath;
 $extText = implode(',', $defaultExtensions);
-$direccion = 'a_utf8'; // a_utf8 | a_win1252
+$direccion = 'a_utf8'; // a_utf8 | a_win1252 | fix_mojibake | restore_bak
 $recursivo = true;
 $hacerBackup = true;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $basePath = isset($_POST['basePath']) ? limpiarRuta((string)$_POST['basePath']) : $defaultBasePath;
-    $direccion = isset($_POST['direccion']) && in_array($_POST['direccion'], ['a_utf8', 'a_win1252'], true)
+    $direccion = isset($_POST['direccion']) && in_array($_POST['direccion'], ['a_utf8', 'a_win1252', 'fix_mojibake', 'restore_bak'], true)
         ? $_POST['direccion']
         : 'a_utf8';
     $extText = isset($_POST['extensiones']) ? (string)$_POST['extensiones'] : $extText;
@@ -203,7 +335,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($hacerBackup) {
                     asegurarBackupOpcional($archivo);
                 }
-                $r = $direccion === 'a_utf8' ? convertirAUtf8($archivo) : convertirAWin1252($archivo);
+                if ($direccion === 'a_utf8') {
+                    $r = convertirAUtf8($archivo);
+                } elseif ($direccion === 'a_win1252') {
+                    $r = convertirAWin1252($archivo);
+                } elseif ($direccion === 'restore_bak') {
+                    $r = restaurarDesdeBak($archivo);
+                } else {
+                    $r = repararMojibake($archivo);
+                }
                 if ($r['ok']) {
                     $resumen['convertidos']++;
                     $resultados[] = ['archivo' => $archivo, 'estado' => 'ok', 'mensaje' => $r['mensaje']];
@@ -215,6 +355,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Valor seguro para mostrar en el input sin exponer rutas del servidor en carga inicial
+// Si hubo POST, mostramos la ruta usada; si no, dejamos vacío
+$basePathUI = ($_SERVER['REQUEST_METHOD'] === 'POST') ? $basePath : '';
 
 ?>
 <!DOCTYPE html>
@@ -260,6 +404,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="opciones">
                     <label><input type="radio" name="direccion" value="a_utf8" <?= $direccion === 'a_utf8' ? 'checked' : ''; ?>> Windows-1252 → UTF-8 (sin BOM)</label>
                     <label><input type="radio" name="direccion" value="a_win1252" <?= $direccion === 'a_win1252' ? 'checked' : ''; ?>> UTF-8 → Windows-1252</label>
+                    <label><input type="radio" name="direccion" value="fix_mojibake" <?= $direccion === 'fix_mojibake' ? 'checked' : ''; ?>> Arreglar mojibake (reparación heurística y guardar en Windows-1252)</label>
+                    <label><input type="radio" name="direccion" value="restore_bak" <?= $direccion === 'restore_bak' ? 'checked' : ''; ?>> Restaurar desde .bak (revertir cambios)</label>
                 </div>
             </div>
 

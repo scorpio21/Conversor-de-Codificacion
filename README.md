@@ -27,6 +27,7 @@ Sigue estos pasos para utilizar el conversor de forma sencilla.
 2. Elige la “Dirección de conversión”:
    - Windows-1252 → UTF-8 (sin BOM)
    - UTF-8 → Windows-1252
+   - Arreglar mojibake (reparación heurística y guardar en Windows-1252)
 3. “Extensiones a procesar”: por defecto `bas, cls, frm, vbp`.
 4. Opciones:
    - “Incluir subcarpetas”: busca dentro de todas las carpetas.
@@ -91,7 +92,9 @@ Este proyecto agradece y reconoce la inspiración y herramientas del repositorio
 
 ### Versión PHP (XAMPP/Apache)
 
-- `utilidades/convert-encoding.php` - Interfaz web para convertir archivos entre Windows-1252 y UTF-8 (sin BOM) recorriendo subcarpetas.
+- `utilidades/convert-encoding.php` - Interfaz web para:
+  - Convertir archivos entre Windows-1252 y UTF-8 (sin BOM) recorriendo subcarpetas.
+  - Arreglar mojibake: intenta revertir corrupción típica (Ã, Â, â€¦) en 1–2 pasadas y guarda en Windows-1252 (útil para proyectos VB6).
 
 ## Uso de la versión PHP
 
@@ -100,7 +103,7 @@ Este proyecto agradece y reconoce la inspiración y herramientas del repositorio
    - `http://localhost/Conversor-de-Codificacion/index.php`
 3. En el formulario:
    - Indica la carpeta base a procesar.
-   - Elige la dirección de conversión: Windows-1252 → UTF-8 o UTF-8 → Windows-1252.
+   - Elige la dirección de conversión: Windows-1252 → UTF-8, UTF-8 → Windows-1252 o **Arreglar mojibake**.
    - Define extensiones (por defecto: `bas, cls, frm, vbp`).
    - Marca si quieres incluir subcarpetas y crear backups `.bak` (opcional).
 4. Pulsa "Convertir" para ejecutar.
