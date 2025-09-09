@@ -24,6 +24,7 @@ body {
   padding: 24px 16px;
   background: linear-gradient(180deg, rgba(37,99,235,0.15), rgba(17,24,39,0));
   border-bottom: 1px solid var(--border);
+  text-align: center;
 }
 .cabecera h1 {
   margin: 0 0 6px;

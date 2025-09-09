@@ -227,10 +227,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/convert-encoding.css?v=1">
 </head>
 <body>
-    <header class="cabecera" style="text-align: center;">
+    <header class="cabecera">
         <h1>Conversor de Codificación</h1>
         <p>Convierte archivos .bas, .cls, .frm, .vbp entre UTF-8 (sin BOM) y Windows-1252, recorriendo subcarpetas.</p>
-        <div class="creditos cabecera-creditos" role="note" style="text-align: center;">
+        <div class="creditos cabecera-creditos" role="note">
             Créditos: <a href="https://github.com/jonathanhecl/vb6-ia-tools" target="_blank" rel="noopener noreferrer">jonathanhecl/vb6-ia-tools</a>
             Tools for use IA on VB6 (Visual Basic 6)
         </div>
