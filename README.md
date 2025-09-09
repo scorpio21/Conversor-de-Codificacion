@@ -2,6 +2,78 @@
 
 ![Captura del programa](img/captura.png)
 
+## Guía rápida de uso
+
+Sigue estos pasos para utilizar el conversor de forma sencilla.
+
+### Requisitos
+
+- Windows con XAMPP (Apache) para la versión web en PHP.
+- PowerShell 5.1 o superior para los scripts `.ps1` (opcional).
+
+### Instalación (XAMPP)
+
+1. Copia esta carpeta dentro de `htdocs`, por ejemplo:
+   - `d:/xampp/htdocs/Conversor-de-Codificacion`
+2. En XAMPP, inicia Apache.
+3. Abre en el navegador:
+   - `http://localhost/Conversor-de-Codificacion/index.php`
+
+### Uso rápido (versión web en PHP)
+
+1. En “Carpeta base”, escribe la ruta a la carpeta que quieres procesar (ej.: `D:\proyectos\MiJuegoVB6`).
+   - Botón “Proyecto”: pone la carpeta del proyecto actual.
+   - Botón “Elegir carpeta…”: abre un explorador para navegar por subcarpetas.
+2. Elige la “Dirección de conversión”:
+   - Windows-1252 → UTF-8 (sin BOM)
+   - UTF-8 → Windows-1252
+3. “Extensiones a procesar”: por defecto `bas, cls, frm, vbp`.
+4. Opciones:
+   - “Incluir subcarpetas”: busca dentro de todas las carpetas.
+   - “Crear backup .bak si no existe”: guarda una copia del archivo antes de convertir.
+5. Pulsa “Convertir”. Verás un resumen con procesados, convertidos y errores.
+
+Recomendación: comienza con una carpeta pequeña o realiza una copia de seguridad antes de convertir proyectos grandes.
+
+### Uso con PowerShell (alternativa por consola)
+
+Abre PowerShell en la carpeta del proyecto y ejecuta:
+
+Convertir a UTF-8 (sin BOM):
+
+```powershell
+./script/ConvertTo-Utf8.ps1 -Path "C:\ruta\a\mi\proyecto"
+```
+
+Convertir a Windows-1252:
+
+```powershell
+./script/ConvertTo-Win1252.ps1 -Path "C:\ruta\a\mi\proyecto"
+```
+
+Si PowerShell bloquea los scripts, puedes ajustar temporalmente la Execution Policy (como administrador):
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+### Notas de seguridad
+
+- Esta herramienta está pensada para uso local en tu máquina.
+- No conviertas carpetas del sistema ni rutas ajenas a tu proyecto.
+- Activa la opción de backup `.bak` para poder deshacer si algo no queda como esperabas.
+
+### Problemas comunes y soluciones
+
+- “No se encontraron archivos para convertir”:
+  - Revisa la ruta de “Carpeta base” y las extensiones.
+  - Activa “Incluir subcarpetas” si los archivos están en niveles inferiores.
+- “Errores de escritura o permisos”:
+  - Ejecuta XAMPP/Apache con permisos suficientes o elige una carpeta donde tengas lectura/escritura.
+- “Caracteres raros tras convertir a Windows-1252”:
+  - Algunos caracteres de UTF-8 no existen en Windows-1252 y se sustituyen/ignoran.
+  - Revisa el resultado y considera quedarte en UTF-8 si es posible.
+
 Tools for use IA on VB6 (Visual Basic 6)
 
 ## Créditos

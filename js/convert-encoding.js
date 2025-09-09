@@ -10,7 +10,7 @@
   // Rellena con la ruta del proyecto detectada desde el propio HTML (meta simple: el valor que ya viene por defecto)
   if (btnProyecto && baseInput) {
     btnProyecto.addEventListener('click', () => {
-      const defaultVal = baseInput.getAttribute('value') || baseInput.value;
+      const defaultVal = baseInput.dataset.defaultPath || '';
       baseInput.value = defaultVal;
       baseInput.focus();
       baseInput.select();

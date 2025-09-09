@@ -98,6 +98,11 @@ function convertirAUtf8(string $rutaArchivo): array {
     }
 }
 
+// Valor a mostrar en el input al cargar (evita exponer la ruta absoluta del servidor en hosting)
+$basePathUI = $_SERVER['REQUEST_METHOD'] === 'POST'
+    ? $basePath
+    : '';
+
 function convertirAWin1252(string $rutaArchivo): array {
     // Lee como UTF-8 y escribe como Windows-1252 (posible transliteración)
     try {
@@ -226,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>Conversor de Codificación</h1>
         <p>Convierte archivos .bas, .cls, .frm, .vbp entre UTF-8 (sin BOM) y Windows-1252, recorriendo subcarpetas.</p>
         <div class="creditos cabecera-creditos" role="note" style="text-align: center;">
-            Créditos: <a href="https://github.com/jonathanhecl/vb6-ia-tools" target="_blank" rel="noopener noreferrer">jonathanhecl/vb6-ia-tools</a><br>
+            Créditos: <a href="https://github.com/jonathanhecl/vb6-ia-tools" target="_blank" rel="noopener noreferrer">jonathanhecl/vb6-ia-tools</a>
             Tools for use IA on VB6 (Visual Basic 6)
         </div>
     </header>
@@ -245,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="post" class="formulario" id="form-conversor" autocomplete="off">
             <div class="fila">
                 <label for="basePath">Carpeta base</label>
-                <input type="text" id="basePath" name="basePath" placeholder="Ej: D:\\xampp\\htdocs\\AoSpain1.0" value="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8'); ?>" required>
+                <input type="text" id="basePath" name="basePath" placeholder="Ej: D:\\xampp\\htdocs\\AoSpain1.0" value="<?= htmlspecialchars($basePathUI, ENT_QUOTES, 'UTF-8'); ?>" data-default-path="<?= htmlspecialchars($defaultBasePath, ENT_QUOTES, 'UTF-8'); ?>" required>
                 <button type="button" id="btn-ruta-proyecto" class="btn-secundario" title="Usar carpeta del proyecto">Proyecto</button>
                 <button type="button" id="btn-explorar" class="btn-secundario" title="Elegir carpeta navegando">Elegir carpeta…</button>
             </div>
