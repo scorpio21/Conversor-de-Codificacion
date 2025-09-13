@@ -13,8 +13,8 @@ Desktop.ini
 .env.*
 
 # Logs
-logs/
-*.log
+#logs/
+#*.log
 
 # Dependencias comunes (por si se agregan en el futuro)
 node_modules/

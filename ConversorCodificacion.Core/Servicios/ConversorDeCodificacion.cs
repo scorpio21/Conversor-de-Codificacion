@@ -12,9 +12,20 @@ namespace ConversorCodificacion.Core.Servicios
     /// </summary>
     public static class ConversorDeCodificacion
     {
+        // Constructor estático: habilita code pages (Windows-1252) en .NET
+        static ConversorDeCodificacion()
+        {
+            try
+            {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                // Ahora que el proveedor está registrado, podemos obtener CP1252 de forma segura
+                Win1252 = Encoding.GetEncoding(1252);
+            }
+            catch { /* ignorar si ya está registrado */ }
+        }
         // Codificaciones
         private static readonly Encoding Utf8SinBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-        private static readonly Encoding Win1252 = Encoding.GetEncoding(1252);
+        private static Encoding Win1252;
 
         /// <summary>
         /// Normaliza finales de línea a CRLF (Windows). Recomendado para archivos VB6.
@@ -117,6 +128,7 @@ namespace ConversorCodificacion.Core.Servicios
             }
             catch (Exception ex)
             {
+                Registro.LogError($"Error al convertir a UTF-8: {rutaArchivo}", ex);
                 return (false, ex.Message);
             }
         }
@@ -136,6 +148,7 @@ namespace ConversorCodificacion.Core.Servicios
             }
             catch (Exception ex)
             {
+                Registro.LogError($"Error al convertir a Windows-1252: {rutaArchivo}", ex);
                 return (false, ex.Message);
             }
         }
@@ -154,6 +167,7 @@ namespace ConversorCodificacion.Core.Servicios
             }
             catch (Exception ex)
             {
+                Registro.LogError($"Error al restaurar desde .bak: {rutaArchivo}", ex);
                 return (false, ex.Message);
             }
         }
@@ -208,6 +222,7 @@ namespace ConversorCodificacion.Core.Servicios
             }
             catch (Exception ex)
             {
+                Registro.LogError($"Error al reparar mojibake: {rutaArchivo}", ex);
                 return (false, ex.Message);
             }
         }

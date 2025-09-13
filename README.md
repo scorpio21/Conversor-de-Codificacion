@@ -150,6 +150,24 @@ dotnet run --project .\ConversorCodificacion.Win\ConversorCodificacion.Win.cspro
   - Direcciones: Windows-1252 → UTF-8 (sin BOM), UTF-8 → Windows-1252, Arreglar mojibake, Restaurar desde .bak.
   - Salvaguardas VB6: `.frm`/`.vbp` no se convierten a UTF-8 y todos los archivos VB6 se guardan con CRLF.
 
+### Interfaz y personalización
+
+- Tema oscuro aplicado a controles (`ConversorCodificacion.Win/Estilos/TemaOscuro.cs`).
+- Contenedor tipo “card” con borde suave (`ConversorCodificacion.Win/Controles/PanelCard.cs`).
+- Barra de progreso configurable con porcentaje superpuesto:
+  - Menú `Estilos de barra`: Bloques, Continua, Indeterminada.
+  - Menú `Color de barra`: Verde, Amarillo, Rojo, Azul, Cian y `Elegir…` (selector de color).
+- Persistencia de preferencias en `Config/appsettings.json`:
+  - `EstiloBarra`: `Blocks | Continuous | Marquee`
+  - `ColorBarra`: nombre o color hex (`#RRGGBB`)
+- Recuerda la última ruta utilizada en `Config/ultima-ruta.json`.
+
+### Logs
+
+- Los errores se registran en `Logs/app_YYYY-MM-DD.log` junto al ejecutable.
+- Menú `Archivo` → `Abrir log` abre la carpeta de logs.
+- Menú `Archivo` → `Abrir carpeta Config` abre `Config/` (preferencias y última ruta).
+
 ## Uso de los scripts de PowerShell
 
 ### Convertir a UTF-8
