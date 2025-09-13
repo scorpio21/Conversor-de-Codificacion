@@ -30,6 +30,7 @@ partial class Form1
     private ConversorCodificacion.Win.Controles.PanelCard pnlCard;
     private System.Windows.Forms.TableLayoutPanel tblCard;
     private System.Windows.Forms.FlowLayoutPanel flpChecks;
+    private System.Windows.Forms.FlowLayoutPanel flpDireccion;
     private ConversorCodificacion.Win.Controles.ProgressBarEx pbProgreso;
     private System.Windows.Forms.Label lblProgreso;
     private System.Windows.Forms.Panel pnlProgresoHost;
@@ -49,7 +50,7 @@ partial class Form1
     private System.Windows.Forms.ToolStripMenuItem colorRojoToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem colorAzulToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem colorCianToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem colorElegirToolStripMenuItem;
+    
     private System.Windows.Forms.ToolStripMenuItem ayudaToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem ayudaInstruccionesToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem ayudaAgradecimientosToolStripMenuItem;
@@ -392,10 +393,6 @@ partial class Form1
         // 
         // grpDireccion
         // 
-        this.grpDireccion.Controls.Add(this.rbRestoreBak);
-        this.grpDireccion.Controls.Add(this.rbFixMojibake);
-        this.grpDireccion.Controls.Add(this.rbAWin1252);
-        this.grpDireccion.Controls.Add(this.rbAUtf8);
         this.grpDireccion.Location = new System.Drawing.Point(16, 70);
         this.grpDireccion.Name = "grpDireccion";
         this.grpDireccion.Size = new System.Drawing.Size(738, 56);
@@ -404,6 +401,26 @@ partial class Form1
         this.grpDireccion.Text = "Dirección de conversión";
         this.grpDireccion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+
+        // flpDireccion
+        //
+        this.flpDireccion = new System.Windows.Forms.FlowLayoutPanel();
+        this.flpDireccion.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.flpDireccion.AutoSize = true;
+        this.flpDireccion.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        this.flpDireccion.WrapContents = false;
+        this.flpDireccion.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+        this.flpDireccion.Padding = new System.Windows.Forms.Padding(8, 4, 8, 4);
+        // Márgenes de los radios para separación homogénea
+        this.rbAUtf8.Margin = new System.Windows.Forms.Padding(8, 3, 8, 3);
+        this.rbAWin1252.Margin = new System.Windows.Forms.Padding(8, 3, 8, 3);
+        this.rbFixMojibake.Margin = new System.Windows.Forms.Padding(8, 3, 8, 3);
+        this.rbRestoreBak.Margin = new System.Windows.Forms.Padding(8, 3, 8, 3);
+        this.flpDireccion.Controls.Add(this.rbAUtf8);
+        this.flpDireccion.Controls.Add(this.rbAWin1252);
+        this.flpDireccion.Controls.Add(this.rbFixMojibake);
+        this.flpDireccion.Controls.Add(this.rbRestoreBak);
+        this.grpDireccion.Controls.Add(this.flpDireccion);
         // 
         // rbAUtf8
         // 
@@ -419,7 +436,7 @@ partial class Form1
         // rbAWin1252
         // 
         this.rbAWin1252.AutoSize = true;
-        this.rbAWin1252.Location = new System.Drawing.Point(218, 26);
+        this.rbAWin1252.Location = new System.Drawing.Point(250, 26);
         this.rbAWin1252.Name = "rbAWin1252";
         this.rbAWin1252.Size = new System.Drawing.Size(149, 19);
         this.rbAWin1252.TabIndex = 1;
@@ -430,7 +447,7 @@ partial class Form1
         // rbFixMojibake
         // 
         this.rbFixMojibake.AutoSize = true;
-        this.rbFixMojibake.Location = new System.Drawing.Point(395, 26);
+        this.rbFixMojibake.Location = new System.Drawing.Point(470, 26);
         this.rbFixMojibake.Name = "rbFixMojibake";
         this.rbFixMojibake.Size = new System.Drawing.Size(111, 19);
         this.rbFixMojibake.TabIndex = 2;
@@ -441,12 +458,12 @@ partial class Form1
         // rbRestoreBak
         // 
         this.rbRestoreBak.AutoSize = true;
-        this.rbRestoreBak.Location = new System.Drawing.Point(527, 26);
+        this.rbRestoreBak.Location = new System.Drawing.Point(610, 26);
         this.rbRestoreBak.Name = "rbRestoreBak";
         this.rbRestoreBak.Size = new System.Drawing.Size(119, 19);
         this.rbRestoreBak.TabIndex = 3;
         this.rbRestoreBak.TabStop = true;
-        this.rbRestoreBak.Text = "Restaurar desde .bak";
+        this.rbRestoreBak.Text = "Restaurar .bak";
         this.rbRestoreBak.UseVisualStyleBackColor = true;
         // 
         // lblExtensiones
@@ -553,7 +570,7 @@ partial class Form1
         this.MinimumSize = new System.Drawing.Size(796, 489);
         this.Name = "Form1";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Conversor de Codificación (UTF-8 ↔ Windows-1252)";
+        this.Text = "Conversor de Codificación (UTF-8 ↔ Windows-1252) By Scorpio";
         this.grpDireccion.ResumeLayout(false);
         this.grpDireccion.PerformLayout();
         this.ResumeLayout(false);
