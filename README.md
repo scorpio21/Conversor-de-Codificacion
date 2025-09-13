@@ -117,6 +117,39 @@ Este proyecto agradece y reconoce la inspiración y herramientas del repositorio
 - CSS: `css/convert-encoding.css`
 - JS: `js/convert-encoding.js`
 
+## Versión .NET (WinForms)
+
+La solución incluye una versión de escritorio para Windows basada en .NET (WinForms):
+
+- Solución: `ConversorCodificacion.sln`
+- Proyectos:
+  - `ConversorCodificacion.Core` (lógica de conversión y utilidades)
+  - `ConversorCodificacion.Win` (interfaz WinForms)
+
+### Requisitos
+
+- SDK de .NET 9 (o superior compatible con `net9.0-windows`).
+
+### Compilar
+
+```powershell
+dotnet restore
+dotnet build -c Release
+```
+
+### Ejecutar (WinForms)
+
+```powershell
+dotnet run --project .\ConversorCodificacion.Win\ConversorCodificacion.Win.csproj -c Release
+```
+
+### Funcionalidad
+
+- Equivalente a la versión PHP:
+  - Selección de carpeta base, extensiones, recursividad y backup `.bak`.
+  - Direcciones: Windows-1252 → UTF-8 (sin BOM), UTF-8 → Windows-1252, Arreglar mojibake, Restaurar desde .bak.
+  - Salvaguardas VB6: `.frm`/`.vbp` no se convierten a UTF-8 y todos los archivos VB6 se guardan con CRLF.
+
 ## Uso de los scripts de PowerShell
 
 ### Convertir a UTF-8
