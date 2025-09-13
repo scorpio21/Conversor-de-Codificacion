@@ -25,7 +25,8 @@ namespace ConversorCodificacion.Core.Servicios
         }
         // Codificaciones
         private static readonly Encoding Utf8SinBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-        private static Encoding Win1252;
+        // Inicialización por defecto para evitar nullability; se sobrescribe en el ctor estático
+        private static Encoding Win1252 = Encoding.Latin1;
 
         /// <summary>
         /// Normaliza finales de línea a CRLF (Windows). Recomendado para archivos VB6.
