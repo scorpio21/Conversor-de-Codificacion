@@ -23,6 +23,31 @@ function limpiarRuta(string $ruta): string {
 }
 
 /**
+ * Normaliza finales de línea a CRLF (Windows), recomendado para archivos de VB6.
+ */
+function asegurarCRLF(string $texto): string {
+    // Normaliza primero a LF y luego a CRLF
+    $tmp = str_replace(["\r\n", "\r"], "\n", $texto);
+    return str_replace("\n", "\r\n", $tmp);
+}
+
+/**
+ * Determina si la extensión corresponde a archivos típicos de VB6.
+ */
+function esExtensionVB6(string $rutaArchivo): bool {
+    $ext = strtolower(pathinfo($rutaArchivo, PATHINFO_EXTENSION));
+    return in_array($ext, ['frm', 'vbp', 'cls', 'bas'], true);
+}
+
+/**
+ * Extensiones críticas de VB6 que deben permanecer en ANSI/CP1252 para evitar corrupción en IDE.
+ */
+function esExtensionCriticaVB6(string $rutaArchivo): bool {
+    $ext = strtolower(pathinfo($rutaArchivo, PATHINFO_EXTENSION));
+    return in_array($ext, ['frm', 'vbp'], true);
+}
+
+/**
  * Verifica si una cadena de bytes es UTF-8 válida.
  */
 function esUtf8Valido(string $bytes): bool {
@@ -196,6 +221,10 @@ function listarArchivos(string $basePath, array $extensiones, bool $recursivo = 
 function convertirAUtf8(string $rutaArchivo): array {
     // Convierte Windows-1252 → UTF-8 sin BOM, evitando doble conversión
     try {
+        // Seguridad: no convertir a UTF-8 los archivos críticos de VB6 (.frm, .vbp)
+        if (esExtensionCriticaVB6($rutaArchivo)) {
+            return ['ok' => true, 'mensaje' => 'Omitido por seguridad (.frm/.vbp deben permanecer en Windows-1252)'];
+        }
         $contenido = file_get_contents($rutaArchivo);
         if ($contenido === false) {
             throw new RuntimeException('No se pudo leer el archivo');
@@ -209,6 +238,10 @@ function convertirAUtf8(string $rutaArchivo): array {
         if ($convertido === false) {
             // Fallback con mb
             $convertido = mb_convert_encoding((string)$contenido, 'UTF-8', 'Windows-1252');
+        }
+        // Asegurar CRLF en archivos de VB6
+        if (esExtensionVB6($rutaArchivo)) {
+            $convertido = asegurarCRLF($convertido);
         }
         $ok = file_put_contents($rutaArchivo, $convertido);
         if ($ok === false) {
@@ -247,6 +280,10 @@ function convertirAWin1252(string $rutaArchivo): array {
         if ($bytes === false) {
             // Fallback con mb (puede reemplazar caracteres no representables)
             $bytes = mb_convert_encoding($contenido, 'Windows-1252', 'UTF-8');
+        }
+        // Asegurar CRLF en archivos de VB6
+        if (esExtensionVB6($rutaArchivo)) {
+            $bytes = asegurarCRLF($bytes);
         }
         $ok = file_put_contents($rutaArchivo, $bytes);
         if ($ok === false) {

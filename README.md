@@ -28,6 +28,7 @@ Sigue estos pasos para utilizar el conversor de forma sencilla.
    - Windows-1252 → UTF-8 (sin BOM)
    - UTF-8 → Windows-1252
    - Arreglar mojibake (reparación heurística y guardar en Windows-1252)
+   - Restaurar desde .bak (si existe una copia de seguridad)
 3. “Extensiones a procesar”: por defecto `bas, cls, frm, vbp`.
 4. Opciones:
    - “Incluir subcarpetas”: busca dentro de todas las carpetas.
@@ -63,12 +64,15 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 - Esta herramienta está pensada para uso local en tu máquina.
 - No conviertas carpetas del sistema ni rutas ajenas a tu proyecto.
 - Activa la opción de backup `.bak` para poder deshacer si algo no queda como esperabas.
+- Salvaguardas para VB6:
+  - Los archivos `*.frm` y `*.vbp` NO se convierten a UTF-8 por seguridad: deben permanecer en Windows-1252.
+  - Para cualquier archivo VB6 (`.bas`, `.cls`, `.frm`, `.vbp`) el guardado fuerza finales de línea CRLF (Windows) para evitar corrupción en el IDE.
+  - Recomendación: si un `.frm` se ve corrupto, usa “Arreglar mojibake” o “Restaurar desde .bak”.
 
 ### Problemas comunes y soluciones
 
 - “No se encontraron archivos para convertir”:
   - Revisa la ruta de “Carpeta base” y las extensiones.
-  - Activa “Incluir subcarpetas” si los archivos están en niveles inferiores.
 - “Errores de escritura o permisos”:
   - Ejecuta XAMPP/Apache con permisos suficientes o elige una carpeta donde tengas lectura/escritura.
 - “Caracteres raros tras convertir a Windows-1252”:
@@ -147,6 +151,7 @@ Este proyecto agradece y reconoce la inspiración y herramientas del repositorio
 - Muestra un resumen de la conversión
 - Manejo de errores detallado
 - Compatible con PowerShell 5.1 y versiones posteriores
+- Salvaguardas para VB6: evita UTF-8 en `.frm`/`.vbp` y normaliza CRLF al guardar archivos VB6
 
 ## Notas
 
