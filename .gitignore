@@ -38,6 +38,20 @@ coverage/
 *.so
 *.dylib
 
+# .NET / Visual Studio / WinForms
+bin/
+obj/
+.vs/
+*.user
+*.csproj.user
+*.suo
+*.nupkg
+*.snupkg
+*.cache
+
+# Publicación/Paquetes
+/publish/
+
 # Otros
 # Carpeta temporal de compilaciones o exportaciones si se usa
 /dist/
