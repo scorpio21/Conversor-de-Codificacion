@@ -126,6 +126,8 @@ La solución incluye una versión de escritorio para Windows basada en .NET (Win
   - `ConversorCodificacion.Core` (lógica de conversión y utilidades)
   - `ConversorCodificacion.Win` (interfaz WinForms)
 
+![Captura .NET](img/cap.net.png)
+
 ### Requisitos
 
 - SDK de .NET 9 (o superior compatible con `net9.0-windows`).
@@ -167,6 +169,32 @@ dotnet run --project .\ConversorCodificacion.Win\ConversorCodificacion.Win.cspro
 - Los errores se registran en `Logs/app_YYYY-MM-DD.log` junto al ejecutable.
 - Menú `Archivo` → `Abrir log` abre la carpeta de logs.
 - Menú `Archivo` → `Abrir carpeta Config` abre `Config/` (preferencias y última ruta).
+
+### Publicación / Release (v1.00 Beta)
+
+Pasos para generar el ejecutable y crear un release:
+
+1. Publicar (elige una de las dos opciones):
+
+   Dependiente del runtime .NET (ligero, requiere .NET instalado):
+
+   ```powershell
+   dotnet publish .\ConversorCodificacion.Win\ConversorCodificacion.Win.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:SelfContained=false -o publish
+   ```
+
+   Self-contained (incluye runtime, no requiere .NET; archivo más grande):
+
+   ```powershell
+   dotnet publish .\ConversorCodificacion.Win\ConversorCodificacion.Win.csproj -c Release -r win-x64 -p:PublishSingleFile=true -p:SelfContained=true -o publish
+   ```
+
+2. Contenido a adjuntar al release:
+   - El zip de la carpeta `publish/` (incluir `ConversorCodificacion.Win.exe` y cualquier archivo adicional generado).
+   - Este repositorio (código fuente) ya contiene la solución completa.
+
+3. Crear tag y release en GitHub (v1.00 Beta) y adjuntar el zip. Notas sugeridas:
+   - Novedades: WinForms con tema oscuro, progreso con porcentaje, logs y config, última ruta, menús de Ayuda.
+   - Requisitos: Windows 10+; para versión dependiente, .NET 9 Runtime instalado.
 
 ## Uso de los scripts de PowerShell
 

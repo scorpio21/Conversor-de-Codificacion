@@ -30,7 +30,7 @@ partial class Form1
     private ConversorCodificacion.Win.Controles.PanelCard pnlCard;
     private System.Windows.Forms.TableLayoutPanel tblCard;
     private System.Windows.Forms.FlowLayoutPanel flpChecks;
-    private System.Windows.Forms.ProgressBar pbProgreso;
+    private ConversorCodificacion.Win.Controles.ProgressBarEx pbProgreso;
     private System.Windows.Forms.Label lblProgreso;
     private System.Windows.Forms.Panel pnlProgresoHost;
     private System.Windows.Forms.Label lblPct;
@@ -50,6 +50,9 @@ partial class Form1
     private System.Windows.Forms.ToolStripMenuItem colorAzulToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem colorCianToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem colorElegirToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem ayudaToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem ayudaInstruccionesToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem ayudaAgradecimientosToolStripMenuItem;
 
     /// <summary>
     ///  Liberar los recursos que se estén usando.
@@ -145,6 +148,32 @@ partial class Form1
 
         // Agregar al menú Archivo ahora que están instanciados
         this.archivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.abrirConfigToolStripMenuItem, this.salirToolStripMenuItem });
+
+        // 
+        // ayudaToolStripMenuItem
+        // 
+        this.ayudaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+        this.ayudaInstruccionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+        this.ayudaAgradecimientosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+        this.ayudaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ayudaInstruccionesToolStripMenuItem,
+            this.ayudaAgradecimientosToolStripMenuItem});
+        this.ayudaToolStripMenuItem.Name = "ayudaToolStripMenuItem";
+        this.ayudaToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+        this.ayudaToolStripMenuItem.Text = "Ayuda";
+
+        this.ayudaInstruccionesToolStripMenuItem.Name = "ayudaInstruccionesToolStripMenuItem";
+        this.ayudaInstruccionesToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+        this.ayudaInstruccionesToolStripMenuItem.Text = "Instrucciones de uso";
+        this.ayudaInstruccionesToolStripMenuItem.Click += new System.EventHandler(this.ayudaInstruccionesToolStripMenuItem_Click);
+
+        this.ayudaAgradecimientosToolStripMenuItem.Name = "ayudaAgradecimientosToolStripMenuItem";
+        this.ayudaAgradecimientosToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+        this.ayudaAgradecimientosToolStripMenuItem.Text = "Agradecimientos";
+        this.ayudaAgradecimientosToolStripMenuItem.Click += new System.EventHandler(this.ayudaAgradecimientosToolStripMenuItem_Click);
+
+        // Agregar menú Ayuda al MenuStrip
+        this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.ayudaToolStripMenuItem });
 
         // 
         // estilosBarraToolStripMenuItem
@@ -297,9 +326,12 @@ partial class Form1
         this.pnlProgresoHost = new System.Windows.Forms.Panel();
         this.pnlProgresoHost.Dock = System.Windows.Forms.DockStyle.Fill;
         this.pnlProgresoHost.Margin = new System.Windows.Forms.Padding(3, 3, 6, 3);
-        this.pbProgreso = new System.Windows.Forms.ProgressBar();
+        this.pnlProgresoHost.Visible = false;
+        this.pbProgreso = new ConversorCodificacion.Win.Controles.ProgressBarEx();
         this.pbProgreso.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.pbProgreso.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+        this.pbProgreso.Minimum = 0;
+        this.pbProgreso.Maximum = 100;
+        this.pbProgreso.Value = 0;
         this.lblPct = new System.Windows.Forms.Label();
         this.lblPct.Dock = System.Windows.Forms.DockStyle.Fill;
         this.lblPct.Text = "0%";
@@ -315,6 +347,7 @@ partial class Form1
         this.lblProgreso.Dock = System.Windows.Forms.DockStyle.Fill;
         this.lblProgreso.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
         this.lblProgreso.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+        this.lblProgreso.Visible = false;
         this.tblCard.Controls.Add(this.lblProgreso, 1, 6);
 
         // Añadir tabla al panel card
